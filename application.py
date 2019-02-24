@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session
+from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -21,6 +21,8 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
-    return "Project 1: TODO"
+    """ Show the index page for the Book Review Website """
+
+    return render_template("index.html")
