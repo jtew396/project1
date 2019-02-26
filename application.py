@@ -32,3 +32,9 @@ def register():
     """ Allow users to register for the Book Review Website """
 
     return render_template("register.html")
+
+@app.route("/login", methods=["GET"])
+def login():
+    """ Allow users to login to the Book Review Website """
+
+    return render_template("login.html")
