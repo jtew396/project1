@@ -26,3 +26,9 @@ def index():
     """ Show the index page for the Book Review Website """
 
     return render_template("index.html")
+
+@app.route("/register", methods=["GET"])
+def register():
+    """ Allow users to register for the Book Review Website """
+
+    return render_template("register.html")
