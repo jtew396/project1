@@ -2,3 +2,4 @@ __pycache__
 stuff.txt
 flask_session
 venv
+.flaskenv
