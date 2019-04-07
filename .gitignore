@@ -3,3 +3,4 @@ stuff.txt
 flask_session
 venv
 .flaskenv
+droptable.py

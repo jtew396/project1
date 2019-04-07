@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Search
+{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between">
+        <h1>Search</h1>
+    </div>
+    <div class="d-flex justify-content-between">
+        <form action="/search" method="post" class="d-flex justify-content-between">
+            <div class="form-group">
+                <input class="form-control" name="search" placeholder="Search" type="password"/>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+    {% block books %}
+    <div>
+        
+    </div>
+    {% endblock%}
+{% endblock %}
