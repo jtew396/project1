@@ -139,5 +139,22 @@ def logout():
 @app.route("/search", methods=["GET", "POST"])
 def search():
     """Search for Books"""
-    
+
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+
+        # User reaches route by filling out the search
+        try:
+            book = request.form.get("search")
+        except ValueError:
+            return render_template("search.html")
+
+        # Make sure the database can find the book(s)
+        books = db.execute("SELECT * FROM books WHERE to_tsvector('english', body) @@ to_tsquery('english', :search)",
+                                {"search": request.form.get("search")}).fetchall()
+        if not books:
+            return render_template("search.html")
+        else:
+            return render_template("search.html", books=books)
+
     return render_template("search.html")

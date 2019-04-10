@@ -11,16 +11,17 @@
     <div class="d-flex justify-content-between">
         <form action="/search" method="post" class="d-flex justify-content-between">
             <div class="form-group">
-                <input class="form-control" name="search" placeholder="Search" type="password"/>
+                <input class="form-control" name="search" placeholder="Search" type="text"/>
             </div>
             <div class="form-group">
                 <button class="btn btn-primary" type="submit">Search</button>
             </div>
         </form>
     </div>
-    {% block books %}
+    {% for book in books %}
     <div>
-        
+        <h5>{{ book.title }}</h5>
+        <button class "btn btn-priary" type="submit">Review</button>
     </div>
-    {% endblock%}
+    {% endfor %}
 {% endblock %}
