@@ -20,8 +20,17 @@
     </div>
     {% for book in books %}
     <div>
-        <h5>{{ book.title }}</h5>
-        <button class "btn btn-priary" type="submit">Review</button>
+        <h5>
+            <form action="/book" class="d-flex justify-content-between">
+                <div class="form-group">
+                    <a href="/book" value="{{ book.isbn }}">{{ book.title }}</a></h5>
+                </div>
+            </form>
+        <!--
+        <form action="/book" method="post" class="d-flex justify-content-between">
+            <button class="btn btn-primary" type="submit">Review</button>
+        </form>
+        -->
     </div>
     {% endfor %}
 {% endblock %}

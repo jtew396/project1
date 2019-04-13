@@ -150,11 +150,32 @@ def search():
             return render_template("search.html")
 
         # Make sure the database can find the book(s)
-        books = db.execute("SELECT * FROM books WHERE to_tsvector('english', body) @@ to_tsquery('english', :search)",
-                                {"search": request.form.get("search")}).fetchall()
+        # books = db.execute("SELECT * FROM books WHERE to_tsvector('english', body) @@ to_tsquery('english', :search)",
+        #                         {"search": request.form.get("search")}).fetchall()
+
+        # Queu the database for ISBN number - expand later
+        books = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": request.form.get("search")}).fetchall()
+
         if not books:
             return render_template("search.html")
         else:
             return render_template("search.html", books=books)
 
     return render_template("search.html")
+
+@app.route("/books", methods=["GET"])
+def books():
+    books = db.execute("SELECT * FROM books").fetchall()
+    return render_template("books.html", books=books)
+
+@app.route("/books/<int:isbn>")
+def book(isbn):
+    # Make sure the book exists.
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+    if book is None:
+        return apology("No such book", 400)
+
+    # Get all reviews.
+    #reviews = db.execute("SELECT review FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+    #return render_template("book.html", book=book, reviews=reviews)
+    return render_template("books.html", book=book)
