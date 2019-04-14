@@ -168,7 +168,7 @@ def books():
     books = db.execute("SELECT * FROM books").fetchall()
     return render_template("books.html", books=books)
 
-@app.route("/books/<int:isbn>")
+@app.route("/books/<string:isbn>")
 def book(isbn):
     # Make sure the book exists.
     book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchall()

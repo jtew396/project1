@@ -19,18 +19,10 @@
         </form>
     </div>
     {% for book in books %}
-    <div>
-        <h5>
-            <form action="/book" class="d-flex justify-content-between">
-                <div class="form-group">
-                    <a href="/book" value="{{ book.isbn }}">{{ book.title }}</a></h5>
-                </div>
-            </form>
-        <!--
-        <form action="/book" method="post" class="d-flex justify-content-between">
-            <button class="btn btn-primary" type="submit">Review</button>
-        </form>
-        -->
-    </div>
+    <li>
+        <a href="{{ url_for('book', isbn=book.isbn) }}">
+            {{ book.title }} by {{ book.author }}
+        </a>
+    </li>
     {% endfor %}
 {% endblock %}
