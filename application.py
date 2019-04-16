@@ -171,11 +171,28 @@ def books():
 @app.route("/books/<string:isbn>")
 def book(isbn):
     # Make sure the book exists.
-    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if book is None:
         return apology("No such book", 400)
+
+    reviews = []
 
     # Get all reviews.
     #reviews = db.execute("SELECT review FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
     #return render_template("book.html", book=book, reviews=reviews)
-    return render_template("books.html", book=book)
+    return render_template("book.html", book=book, reviews=reviews)
+
+@app.route("/review/<string:isbn>", methods=["GET", "POST"])
+def review(isbn):
+    # User got to the review for the book via a GET request
+    if request.method == "GET":
+        # Make sure the book exists
+        book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+        if book is None:
+            return apology("No such book", 400)
+
+        return render_template("review.html")
+
+    if request.method == "POST":
+
+        return render_template("review.html")

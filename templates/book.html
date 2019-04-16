@@ -8,12 +8,14 @@
 <h1>Book Details</h1>
 
 <ul>
-    <li>Title: {{ book.title }}</li>
-    <li>Author: {{ book.author }}</li>
-    <li>Year: {{ book.year }}</li>
-    <li>ISBN: {{ book.isbn }}
+    <li><b>Title:</b> {{ book.title }}</li>
+    <li><b>Author:</b> {{ book.author }}</li>
+    <li><b>Year:</b> {{ book.year }}</li>
+    <li><b>ISBN:</b> {{ book.isbn }}
 </ul>
-<!--
+
+<hr/>
+
 <h2>Reviews</h2>
 <ul>
     {% for review in reviews %}
@@ -23,5 +25,11 @@
         <li>No reviews.</li>
     {% endfor %}
 </ul>
--->
+
+<hr/>
+
+<a href="{{ url_for('review', isbn=book.isbn) }}">
+    <h2>Write a Review!</h2>
+</a>
+
 {% endblock %}
