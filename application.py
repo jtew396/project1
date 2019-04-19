@@ -266,22 +266,21 @@ def book_api(isbn):
         return jsonify({"error": "Invalid ISBN"}), 404
 
     # Get all reviews
-    reviews = db.execute("SELECT * FROM reviews WHERE ibsn = :isbn", {"isbn": isbn}).fetchall()
+    reviews = db.execute("SELECT * FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
     ratings_sum = 0
-    if reviews is None:
-        review_count = 0
-        review_avg_score = None
-    else:
+    review_count = 0
+    reviews_avg_score = None
+    if reviews is not None:
         for review in reviews:
             review_count += 1
-            ratings_sum += reviews.rating
-        review_avg_score = round(ratings_sum / review_count, 2)
+            ratings_sum += review[4]
+        reviews_avg_score = round(ratings_sum / review_count, 2)
 
     return jsonify({
         "title": book.title,
         "author": book.author,
         "year": int(book.year),
         "isbn": book.isbn,
-        "review_count": reviews_count,
+        "review_count": review_count,
         "average_score": reviews_avg_score
     })
