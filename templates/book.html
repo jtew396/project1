@@ -15,24 +15,39 @@
 </ul>
 <hr/>
 <h2>User Reviews</h2>
-<h5>Average Rating: {{ average_rating }} Stars</h5>
+{% if average_rating == None %}
+<h10>No Reviews Yet</h10>
+{% else %}
+<h10>Average Rating: {{ average_rating }} Stars</h10>
 <ol>
     {% for review in reviews %}
-        <li>{{ review.username }}</li>
+        <li><b>User:</b> {{ review.username }}</li>
         <ul>
             <li>Rating: {{ review.rating }}</li>
             <li>Review: {{ review.content }}</li>
         </ul>
-    {% else %}
-        <li>No reviews.</li>
     {% endfor %}
 </ol>
-
+{% endif %}
 <hr/>
-
+<h2>Goodreads Reviews</h2>
+{% if goodreads_data == None %}
+<h10>No Reviews Available</h10>
+{% else %}
+<div>
+    <h10>Average Rating: <b>{{ goodreads_data['books'][0]['average_rating'] }}</b></h10>
+</div>
+<div>
+    <h10>Number of Ratings: <b>{{ goodreads_data['books'][0]['work_ratings_count'] }}</b></h10>
+</div>
+{% endif %}
+<hr/>
 <a href="{{ url_for('review', isbn=book.isbn) }}">
-    <h2>Write a Review!</h2>
-    <h2>Edit Your Review</h2>
+    {% if review_exists == True %}
+    <h5>View Your Review</h5>
+    {% else %}
+    <h5>Write a Review!</h5>
+    {% endif %}
 </a>
 
 {% endblock %}

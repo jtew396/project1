@@ -1,5 +1,5 @@
 import os
-
+import requests
 
 from flask import Flask, flash, redirect, render_template, request, session, jsonify
 from flask_session import Session
@@ -178,23 +178,33 @@ def book(isbn):
     if book is None:
         return apology("No such book", 400)
 
-    # reviews = []
-
     # Get all reviews.
     reviews = db.execute("SELECT * FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+
+    # Get the Goodreads data
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "oGrroC73zVBU3rZZyUXxBw", "isbns": isbn})
+    goodreads_data = res.json()
+
+    #Get the username
+    username = db.execute("SELECT username FROM users WHERE id = :id", {"id": session["user_id"]}).fetchone()
+
+    # User review exists?
+    review_exists = False
 
     # Calculate the average rating
     average_rating = None
     if reviews is None:
-        return render_template("book.html", book=book, reviews=reviews, average_rating=average_rating)
+        return render_template("book.html", book=book, reviews=reviews, average_rating=average_rating, review_exists=review_exists)
     else:
         review_count = 0
         ratings_sum = 0
         for i in reviews:
+            if i.username == username[0]:
+                review_exists = True
             ratings_sum += i.rating
             review_count += 1
-        average_rating = round(ratings_sum / review_count, 2)
-        return render_template("book.html", book=book, reviews=reviews, average_rating=average_rating)
+            average_rating = round(ratings_sum / review_count, 2)
+        return render_template("book.html", book=book, reviews=reviews, goodreads_data=goodreads_data, average_rating=average_rating, review_exists=review_exists)
 
 @app.route("/review/<string:isbn>", methods=["GET", "POST"])
 def review(isbn):
@@ -208,7 +218,12 @@ def review(isbn):
     # User got to the review for the book via a GET request
     if request.method == "GET":
 
-        return render_template("review.html", book=book)
+        # Get the username from the database
+        username = db.execute("SELECT username FROM users WHERE id = :id", {"id": session["user_id"]}).fetchone()
+
+        review = db.execute("SELECT * FROM reviews WHERE username = :username AND isbn = :isbn", {"username": username[0], "isbn": isbn}).fetchone()
+
+        return render_template("review.html", book=book, review=review)
 
     if request.method == "POST":
 
@@ -221,6 +236,26 @@ def review(isbn):
 
         return render_template("thankyou.html", book=book)
 
+@app.route("/delete/<string:isbn>", methods=["POST"])
+def delete_review(isbn):
+    """Delete Review"""
+
+    # Query the database for the Username
+    username = db.execute("SELECT username FROM users WHERE id = :id", {"id": session["user_id"]}).fetchone()
+
+    # Delete the rview from the database
+    result = db.execute("DELETE FROM reviews WHERE username = :username AND isbn = :isbn", {"username": username[0], "isbn": isbn})
+    db.commit()
+
+    # Gather book info
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+
+    # Review info
+    review = None
+
+    return render_template("review.html", book=book, review=review)
+
+
 @app.route("/api/<string:isbn>")
 def book_api(isbn):
     """Return details about a single book"""
@@ -232,15 +267,21 @@ def book_api(isbn):
 
     # Get all reviews
     reviews = db.execute("SELECT * FROM reviews WHERE ibsn = :isbn", {"isbn": isbn}).fetchall()
+    ratings_sum = 0
     if reviews is None:
-        reviews.count = None
-        reviews.score = None
+        review_count = 0
+        review_avg_score = None
+    else:
+        for review in reviews:
+            review_count += 1
+            ratings_sum += reviews.rating
+        review_avg_score = round(ratings_sum / review_count, 2)
 
     return jsonify({
         "title": book.title,
         "author": book.author,
-        "year": book.year,
+        "year": int(book.year),
         "isbn": book.isbn,
-        "review_count": reviews.count,
-        "average_score": reviews.score
+        "review_count": reviews_count,
+        "average_score": reviews_avg_score
     })
