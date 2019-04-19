@@ -178,28 +178,48 @@ def book(isbn):
     if book is None:
         return apology("No such book", 400)
 
-    reviews = []
+    # reviews = []
 
     # Get all reviews.
-    #reviews = db.execute("SELECT review FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
-    #return render_template("book.html", book=book, reviews=reviews)
-    return render_template("book.html", book=book, reviews=reviews)
+    reviews = db.execute("SELECT * FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+
+    # Calculate the average rating
+    average_rating = None
+    if reviews is None:
+        return render_template("book.html", book=book, reviews=reviews, average_rating=average_rating)
+    else:
+        review_count = 0
+        ratings_sum = 0
+        for i in reviews:
+            ratings_sum += i.rating
+            review_count += 1
+        average_rating = round(ratings_sum / review_count, 2)
+        return render_template("book.html", book=book, reviews=reviews, average_rating=average_rating)
 
 @app.route("/review/<string:isbn>", methods=["GET", "POST"])
 def review(isbn):
     """Let User Make a Review"""
+
+    # Make sure the book exists
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+    if book is None:
+        return apology("No such book", 400)
+
     # User got to the review for the book via a GET request
     if request.method == "GET":
-        # Make sure the book exists
-        book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
-        if book is None:
-            return apology("No such book", 400)
 
         return render_template("review.html", book=book)
 
     if request.method == "POST":
 
-        return render_template("review.html")
+        # Query the database for the Username
+        username = db.execute("SELECT username FROM users WHERE id = :id", {"id": session["user_id"]}).fetchone()
+        # Commit the review to the database
+        result = db.execute("INSERT INTO reviews (username, isbn, content, rating) VALUES(:username, :isbn, :content, :rating)",
+                            {"username": username[0], "isbn": isbn, "content": request.form.get("review_content"), "rating": request.form.get("rating")})
+        db.commit()
+
+        return render_template("thankyou.html", book=book)
 
 @app.route("/api/<string:isbn>")
 def book_api(isbn):

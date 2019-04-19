@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Apology
+{% endblock %}
+
+{% block main %}
+    <h1> Thank you for the review of
+        <a href="{{ url_for('book', isbn=book.isbn) }}">
+        {{ book.title }}
+        </a>!</h1>
+{% endblock %}

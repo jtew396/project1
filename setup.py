@@ -9,8 +9,13 @@ db = scoped_session(sessionmaker(bind=engine))                                  
                                                                                 # database are kept separate
 
 def main():
-    table = db.execute("CREATE TABLE users (id SERIAL PRIMARY KEY, username VARCHAR NOT NULL, hash VARCHAR NOT NULL)")
-    # Create the users called books and name each column
+
+    # Create a table for users
+    # table = db.execute("CREATE TABLE users (id SERIAL PRIMARY KEY, username VARCHAR NOT NULL, hash VARCHAR NOT NULL)")
+
+    # Create a table for reviews
+    reviews = db.execute("CREATE TABLE reviews (id SERIAL PRIMARY KEY, username VARCHAR NOT NULL, isbn VARCHAR NOT NULL, content VARCHAR NOT NULL, rating INTEGER NOT NULL)")
+
     db.commit()
 
 

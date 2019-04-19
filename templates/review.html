@@ -9,7 +9,7 @@
         <h1>Write a Review for {{book.title}} by {{book.author}}</h1>
     </div>
     <hr/>
-    <form action="/review" method="post">
+    <form action="{{ url_for('review', isbn=book.isbn) }}" method="post">
         <div>
             <h5>Star Rating</h5>
         </div>
