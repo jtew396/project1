@@ -1,7 +1,7 @@
 import os
 
 
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, jsonify
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -165,11 +165,14 @@ def search():
 
 @app.route("/books", methods=["GET"])
 def books():
+    """Create a List of All Books"""
+
     books = db.execute("SELECT * FROM books").fetchall()
     return render_template("books.html", books=books)
 
 @app.route("/books/<string:isbn>")
 def book(isbn):
+    """Show Book Details"""
     # Make sure the book exists.
     book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if book is None:
@@ -184,6 +187,7 @@ def book(isbn):
 
 @app.route("/review/<string:isbn>", methods=["GET", "POST"])
 def review(isbn):
+    """Let User Make a Review"""
     # User got to the review for the book via a GET request
     if request.method == "GET":
         # Make sure the book exists
@@ -191,8 +195,32 @@ def review(isbn):
         if book is None:
             return apology("No such book", 400)
 
-        return render_template("review.html")
+        return render_template("review.html", book=book)
 
     if request.method == "POST":
 
         return render_template("review.html")
+
+@app.route("/api/<string:isbn>")
+def book_api(isbn):
+    """Return details about a single book"""
+
+    # Make sure the book exists
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+    if book is None:
+        return jsonify({"error": "Invalid ISBN"}), 404
+
+    # Get all reviews
+    reviews = db.execute("SELECT * FROM reviews WHERE ibsn = :isbn", {"isbn": isbn}).fetchall()
+    if reviews is None:
+        reviews.count = None
+        reviews.score = None
+
+    return jsonify({
+        "title": book.title,
+        "author": book.author,
+        "year": book.year,
+        "isbn": book.isbn,
+        "review_count": reviews.count,
+        "average_score": reviews.score
+    })
