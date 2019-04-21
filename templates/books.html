@@ -5,13 +5,52 @@
 {% endblock %}
 
 {% block main %}
-    <ul>
-        {% for book in books %}
-            <li>
-                <a href="{{ url_for('book', isbn=book.isbn) }}">
-                    {{ book.title }} by {{ book.author }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">
+                    <a href="{{ url_for('books', order='title') }}">
+                        Title
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="{{ url_for('books', order='author') }}">
+                        Author
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="{{ url_for('books', order='isbn') }}">
+                        ISBN
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="{{ url_for('books', order='year') }}">
+                        Year
+                    </a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('book', isbn=book.isbn) }}">
+                        {{ book.title }}
+                    </a>
+                </td>
+                <td>
+                        {{ book.author }}
+                </td>
+                <td>
+                        {{ book.isbn }}
+                </td>
+                <td>
+                        {{ book.year }}
+                </td>
+            </tr>
+            {% endfor %}
+        <tbody>
+    </table>
+</div>
 {% endblock %}

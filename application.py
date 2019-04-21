@@ -147,28 +147,36 @@ def search():
         try:
             book = request.form.get("search")
         except ValueError:
-            return render_template("search.html")
-
-        # Make sure the database can find the book(s)
-        # books = db.execute("SELECT * FROM books WHERE to_tsvector('english', body) @@ to_tsquery('english', :search)",
-        #                         {"search": request.form.get("search")}).fetchall()
-
-        # Queu the database for ISBN number - expand later
-        books = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": request.form.get("search")}).fetchall()
-
-        if not books:
-            return render_template("search.html")
-        else:
             return render_template("search.html", books=books)
 
-    return render_template("search.html")
+        # Search for close matches to search
+        books = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn OR title LIKE :title OR author LIKE :author ORDER BY title ASC", {"isbn": '%' + book + '%', "title": '%' + book + '%', "author": '%' + book + '%'}).fetchall()
+
+        return render_template("search.html", books=books)
+
+    if request.method == "GET":
+        return render_template("search.html")
 
 @app.route("/books", methods=["GET"])
 def books():
     """Create a List of All Books"""
+    if request.method == "GET":
+        # Get all the books order them by title by default
+        books = db.execute("SELECT * FROM books ORDER BY title ASC").fetchall()
+        return render_template("books.html", books=books)
 
-    books = db.execute("SELECT * FROM books").fetchall()
-    return render_template("books.html", books=books)
+        # Order the Books
+        #if order == "title":
+        # Get all the books and order them by title
+        #    books = db.execute("SELECT * FROM books ORDER BY title ASC").fetchall()
+        #elif order == "author":
+        #    books = db.execute("SELECT * FROM books ORDER BY author ASC").fetchall()
+        #elif order == "isbn":
+        #    books = db.execute("SELECT * FROM books ORDER BY ISBN ASC").fetchall()
+        #elif order == "year":
+        #    books = db.execute("SELECT * FROM books ORDER BY year ASC").fetchall()
+        #return render_template("books.html", books=books)
+
 
 @app.route("/books/<string:isbn>")
 def book(isbn):
@@ -191,10 +199,12 @@ def book(isbn):
     # User review exists?
     review_exists = False
 
+    # Query the database for the average rating
+    average_rating = db.execute("SELECT AVG(rating) FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     # Calculate the average rating
-    average_rating = None
+    # average_rating = None
     if reviews is None:
-        return render_template("book.html", book=book, reviews=reviews, average_rating=average_rating, review_exists=review_exists)
+        return render_template("book.html", book=book, reviews=reviews, goodreads_data=goodreads_data, average_rating=average_rating, review_exists=review_exists)
     else:
         review_count = 0
         ratings_sum = 0
