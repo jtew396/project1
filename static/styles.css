@@ -1,3 +1,11 @@
+.container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
 nav .navbar-brand
 {
     /* size for brand */
@@ -25,7 +33,7 @@ nav .navbar-brand .green
 main .form-control
 {
     /* center form controls */
-    display: inline-block;
+    /* display: inline-block; */
 
     /* override Bootstrap's 100% width for form controls */
     width: auto;
@@ -37,7 +45,7 @@ main
     overflow-x: auto;
 
     /* center contents */
-    /* text-align: center; */
+    text-align: center;
 }
 
 main img

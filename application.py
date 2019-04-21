@@ -150,7 +150,7 @@ def search():
             return render_template("search.html", books=books)
 
         # Search for close matches to search
-        books = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn OR title LIKE :title OR author LIKE :author ORDER BY title ASC", {"isbn": '%' + book + '%', "title": '%' + book + '%', "author": '%' + book + '%'}).fetchall()
+        books = db.execute("SELECT * FROM books WHERE isbn ILIKE :isbn OR title ILIKE :title OR author ILIKE :author ORDER BY title ASC", {"isbn": '%' + book + '%', "title": '%' + book + '%', "author": '%' + book + '%'}).fetchall()
 
         return render_template("search.html", books=books)
 
