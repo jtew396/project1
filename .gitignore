@@ -1,6 +1,7 @@
 __pycache__
 stuff.txt
 flask_session
+env
 venv
 .flaskenv
 droptable.py

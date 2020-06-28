@@ -18,7 +18,11 @@
 {% if average_rating == None %}
 <h10>No Reviews Yet</h10>
 {% else %}
-<h10>Average Rating: {{ average_rating }} Stars</h10>
+{% if average_rating is not none %}
+    <h10>Average Rating: {{ average_rating }} Stars</h10>
+{% else %}
+    <h10>There are no user reviews yet.</h10>
+{% endif %}
 <ol>
     {% for review in reviews %}
         <li><b>User:</b> {{ review.username }}</li>

@@ -284,7 +284,10 @@ def book_api(isbn):
         for review in reviews:
             review_count += 1
             ratings_sum += review[4]
-        reviews_avg_score = round(ratings_sum / review_count, 2)
+        if review_count == 0:
+            reviews_avg_score = round(0, 2)
+        else:
+            reviews_avg_score = round(ratings_sum / review_count, 2)
 
     return jsonify({
         "title": book.title,
